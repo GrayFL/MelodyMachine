@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from typing import Union
+from itertools import product, chain
 from re import findall
 
 NOTE_MAP = {
@@ -31,29 +32,64 @@ DEGREE_MAP = {
     # 如9度 9/7=1...2，即等效2度音
     # numerical name 度数
     # 以自然大调为基准
-    0: 0,  # 纯一度
-    1: 2,  # 大二度
-    2: 4,  # 大三度
-    3: 5,  # 纯四度
-    4: 7,  # 纯五度
-    5: 9,  # 大六度
-    6: 11,  # 大七度
+    '1P': 0,  # 纯一度
+    '2m': 1,  # 小二度
+    '2M': 2,  # 大二度
+    '3m': 3,  # 小三度
+    '3M': 4,  # 大三度
+    '4P': 5,  # 纯四度
+    '4A': 6,  # 增四度
+    '5d': 6,  # 减五度
+    '5P': 7,  # 纯五度
+    '6m': 8,  # 小六度
+    '5A': 8,  # 增五度
+    '6M': 9,  # 大六度
+    '7d': 9,  # 大六度
+    '7m': 10,  # 小七度
+    '7M': 11,  # 大七度
+    '8P': 12,  # 纯八度
+    '9m': 13,  # 小九度（小二度）
+    '8A': 13,  # 增八度
+    '9M': 14,  # 大九度（大二度）
+    '9A': 15,  # 增九度（增二度）
+    '10m': 15,  # 小十度（小三度）
+    '10M': 16,  # 大十度（大三度）
+    '11P': 17,  # 纯十一度（纯四度）
+    '11A': 18,  # 增十一度（增四度）
+    '12d': 18,  # 减十二度（减五度）
+    '12P': 19,  # 纯十二度（纯五度）
+    '13m': 20,  # 小十三度（小六度）
+    '13M': 21,  # 大十三度（大六度）
+    '14m': 22,  # 小十四度（小七度）
+    '14M': 23,  # 大十四度（大七度）
     }
 
 INTERVAL_MAP = {
     # 音程数
-    0: '1P',  # 纯一度/纯八度
-    1: '2m',  # 小二度
-    2: '2M',  # 大二度
-    3: '3m',  # 小三度
-    4: '3M',  # 大三度
-    5: '4P',  # 纯四度
-    6: '4A',  # 增四度/减五度(5d)
-    7: '5P',  # 纯五度
-    8: '6m',  # 小六度/增五度(5A)
-    9: '6M',  # 大六度
-    10: '7m',  # 小七度
-    11: '7M',  # 大七度
+    0: ['1P'],  # 纯一度
+    1: ['2m', '9m'],  # 小二度（小九度）
+    2: ['2M', '9M'],  # 大二度（大九度）
+    3: ['3m', '10m'],  # 小三度（小十度）
+    4: ['3M', '10M'],  # 大三度（大十度）
+    5: ['4P'],  # 纯四度
+    6: ['4A', '5d'],  # 增四度/减五度
+    7: ['5P'],  # 纯五度
+    8: ['6m', '5A', '13m'],  # 小六度（小十三度）/增五度
+    9: ['6M', '7d', '13M'],  # 大六度（大十三度）
+    10: ['7m', '14m'],  # 小七度（小十四度）
+    11: ['7M', '14M'],  # 大七度（大十四度）
+    12: ['8P', '1P'],  # 纯八度（纯一度）
+    13: ['9m', '8A', '2m'],  # 小九度（小二度）/增八度
+    14: ['9M', '2M'],  # 大九度（大二度）
+    15: ['10m', '9A', '3m'],  # 小十度（小三度）/增九度（增二度）
+    16: ['10M', '3M'],  # 大十度（大三度）
+    17: ['11P', '4P'],  # 纯十一度（纯四度）
+    18: ['11A', '12d', '4A', '5d'],  # 增十一度（增四度）/减十二度（减五度）
+    19: ['12P', '5P'],  # 纯十二度（纯五度）
+    20: ['13m', '6m'],  # 小十三度（小六度）
+    21: ['13M', '6M'],  # 大十三度（大六度）
+    22: ['14m', '7m'],  # 小十四度（小七度）
+    23: ['14M', '7M'],  # 大十四度（大七度）
     }
 
 PITCH_MAP = {
@@ -74,7 +110,7 @@ PITCH_MAP = {
 
 # CHORD_MAP = {''}
 CHORD_DB = pd.read_csv('chord_db.csv')
-CHORD_DB.set_index(CHORD_DB['音程'], inplace=True)
+# CHORD_DB.set_index(CHORD_DB['度数'], inplace=True)
 # CHORD_DB.to_csv('chord_db.csv', index=False)
 
 
@@ -146,7 +182,7 @@ def pitch2note(
 
 @staticmethod
 def degree2interval(
-        degrees: Union[str, list[str], list[tuple[str, str]]],
+        degrees: Union[str, list[str]],
         is_sort=False,
         is_remove_duplicates=False
     ):
@@ -159,21 +195,12 @@ def degree2interval(
         - 和弦的度数序列，如
         `'1P,5P,7m,9M,11P'`
         `['1P','5P','7m','9M','11P']`
-        `[('1', 'P'), ('5', 'P'), ('7', 'm'), ('9', 'M'), ('11', 'P')]`
     '''
     if isinstance(degrees, str):
-        degrees = findall('(\d+)(\S)', degrees)
+        degrees = findall('(\d+\S)', degrees)
     elif isinstance(degrees, list):
-        if isinstance(degrees[0], str):
-            degrees = findall(
-                '(\d+)(\S)', ''.join(['1P', '5P', '7m', '9M', '11P'])
-                )
-        elif isinstance(degrees[0], tuple):
-            pass
-    intervals = [
-        DEGREE_MAP[(np.int8(degree) - 1) % 7] + SHIFT_MAP[shift]
-        for (degree, shift) in degrees
-        ]
+        pass
+    intervals = [DEGREE_MAP[degree] for degree in degrees]
     if is_remove_duplicates:
         intervals = list(dict.fromkeys(intervals))
         # intervals = list(set(intervals))
@@ -189,40 +216,90 @@ def interval2degree(
         is_sort=False,
         is_remove_duplicates=False
     ):
+    '''
+    从“音程”转换为“度”。如4个半音=>大三度
+
+    Parameters
+    ---
+    intervals:
+        - 和弦的度数序列，如
+        `'0,4,6,9'`
+        `[0,4,6,9]`
+    
+    Return
+    ---
+    arr_degrees:
+        - `[('1P', '3M', '4A', '6M'),
+            ('1P', '3M', '4A', '7d'), ...]`
+    '''
     if isinstance(intervals, str):
         intervals = findall('(\d+)', intervals)
         intervals = [np.int8(interval) for interval in intervals]
     else:
         pass
-    degrees = [INTERVAL_MAP[interval] for interval in intervals]
     if is_remove_duplicates:
-        degrees = list(dict.fromkeys(degrees))
-        # degrees = list(set(degrees))
+        intervals = list(dict.fromkeys(intervals))
+        # intervals = list(set(intervals))
         # set的方式会重排，fromkeys在py3.7后保留插入顺序
     if is_sort:
-        degrees = sorted(degrees)
-    return degrees
+        intervals = sorted(intervals)
+    args = (INTERVAL_MAP[interval] for interval in intervals)
+    arr_degrees = list(product(*args))
+    return arr_degrees
 
 
 @staticmethod
-def list2div(
-        lst: Union[list[np.int8], list[str]],
-        is_sort=False,
-        is_remove_duplicates=False
-    ):
+def degree2div(lst: Union[list[np.int8], list[str]]):
+    '''
+    从既有音程推测可能的等效音程组合
+    '''
     if isinstance(lst[0], np.int8):
         lst = [str(i) for i in lst]
     else:
         pass
-    if is_remove_duplicates:
-        lst = list(dict.fromkeys(lst))
-    if is_sort:
-        lst = sorted(lst)
-    return ','.join(lst)
+    return set(lst)
 
 
 @staticmethod
-def detect_chord(batch_chord: list[np.ndarray]):
+def find_matched_id(arr_shift_degrees: list[list[tuple[str]]]):
+    '''
+    给出组成音，查找包含这些音的所有和弦，并按音数和优先级排序。
+    其中音数越少、优先级越大越靠前
+
+    Parameters
+    ---
+    arr_shift_degrees: list[list[tuple[str]]]
+        - 和弦集合，形如 `[[('1P', '3M', '5P')], [('13m', '1P', '3m')], ...]`
+    
+    Return
+    ---
+    排序好的和弦查询id列表
+    '''
+    arr_matched_id = []
+    for input_id, shift_degrees in enumerate(arr_shift_degrees):
+        # input_id 指输入序列中的序号，即以第几个为根音
+        for degrees in shift_degrees:
+            div = degree2div(degrees)
+            for database_id, s in enumerate(CHORD_DB['度数']):
+                # database_id 指数据库中的序号
+                if div <= set(s.split(',')):
+                    arr_matched_id.append((input_id, database_id))
+    arr_matched_id = list(dict.fromkeys(arr_matched_id))
+
+    arr_matched_id = sorted(
+        arr_matched_id,
+        key=lambda i: 100 * CHORD_DB.loc[i[1], '组成音数'] \
+                          - CHORD_DB.loc[i[1], '优先级'],
+        )  # 音数越少、优先级越大越靠前
+    # print(
+    #     CHORD_DB.loc[[matched_id[1] for matched_id in arr_matched_id],
+    #                     ['和弦标记', '优先级']]
+    #     )
+    return arr_matched_id
+
+
+@staticmethod
+def detect_chord(batch_chord: list[np.ndarray], result_shift=0):
     '''
     chord检测器
 
@@ -235,34 +312,26 @@ def detect_chord(batch_chord: list[np.ndarray]):
     for chord in batch_chord:
         arr_intervals = chord - chord[..., None]
         # 相当于求以每个组成音作为根音时其他音的相对音程
-        arr_intervals = arr_intervals % 12
-        arr_intervals.sort(axis=1)
-        div_intervals = [
-            list2div(intervals, is_remove_duplicates=True)
-            for intervals in arr_intervals
-            ]
-        div_best_match = None  # 匹配和弦的音程关系
-        id_best_match = 0  # 匹配和弦的序号
-        priority = -1  # 和弦库中的匹配优先级
-        for i, div in enumerate(div_intervals):
-            try:
-                if (div in CHORD_DB.index
-                    ) and (CHORD_DB.loc[div, '优先级'] > priority):
-                    div_best_match = div
-                    id_best_match = i
-                    priority = CHORD_DB.loc[div, '优先级']
-            except Exception as e:
-                print(e)
-                print(div)
-                print(CHORD_DB.loc[div, '优先级'])
-        if None is div_best_match:
+        arr_intervals = arr_intervals % 24
+        # 量化到两个八度内
+        arr_shift_degrees = list([
+            interval2degree(intervals) for intervals in arr_intervals
+            ])
+        # print(arr_shift_degrees)
+        arr_matched_id = find_matched_id(arr_shift_degrees)
+        if len(arr_matched_id) == 0:  # 和弦库未收录
             root_note = None
+            base_note = None
             chord_data = {'default': chord}
             chord_name = f'Unknown'
         else:
+            index = result_shift
+            id_best_match = arr_matched_id[index][0]  # 输入和弦中匹配的id
             root_note = pitch2note(chord[id_best_match], is_root_only=True)
-            chord_data = CHORD_DB.loc[div_best_match]
-            chord_name = f'{root_note}{chord_data["和弦标记"]}'
+            base_note = pitch2note(chord[0], is_root_only=True)
+            inversion_mark = '' if base_note == root_note else f' /{base_note}'
+            chord_data = CHORD_DB.loc[arr_matched_id[index][1]]
+            chord_name = f'{root_note}{chord_data["和弦标记"]}{inversion_mark}'
         detections.append({
             'chord name': chord_name,
             'root note': root_note,
