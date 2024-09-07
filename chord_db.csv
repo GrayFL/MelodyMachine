@@ -1,0 +1,107 @@
+﻿记号,名称,音程,度数,音程结构,音高集合,优先级,和弦标记
+"m,min,-",minor,"0,3,7","1P,3m,5P",Minor,2320,90,m
+"M,^,",major,"0,4,7","1P,3M,5P",Major,2192,90,M
+"7,dom",dominant seventh,"0,4,7,10","1P,3M,5P,7m",Major,2194,90,7
+5,fifth,"0,7","1P,5P",Unknown,2064,85,5
+"maj13,Maj13,^13",major thirteenth,"0,2,4,7,9,11","1P,3M,5P,7M,9M,13M",Major,2709,10,maj13
+"M7b6,^7b6",major seventh flat sixth,"0,4,8,11","1P,3M,6m,7M",Major,2185,10,M7b6
+11,eleventh,"0,2,5,7,10","1P,5P,7m,9M,11P",Unknown,2642,10,11
+9b13,-,"0,2,4,8,10","1P,3M,7m,9M,13m",Major,2698,10,9b13
+7b13,-,"0,4,8,10","1P,3M,7m,13m",Major,2186,10,7b13
+sus2,suspended second,"0,2,7","1P,2M,5P",Unknown,2576,0,sus2
+"7sus4,7sus",suspended fourth seventh,"0,5,7,10","1P,4P,5P,7m",Unknown,2130,0,7sus4
+"b9sus,phryg,7b9sus,7b9sus4",suspended fourth flat ninth,"0,1,5,7,10","1P,4P,5P,7m,9m",Unknown,3154,0,b9sus
+"sus4,sus",suspended fourth,"0,5,7","1P,4P,5P",Unknown,2128,0,sus4
+"6/9,69,M69",sixth/ninth,"0,2,4,7,9","1P,3M,5P,6M,9M",Major,2708,0,45452
+"6,add6,add13,M6",sixth,"0,4,7,9","1P,3M,5P,6M",Major,2196,0,6
+"m/ma7,m/maj7,mM7,mMaj7,m/M7,-Δ7,mΔ,-^7",minor/major seventh,"0,3,7,11","1P,3m,5P,7M",Minor,2321,0,m/ma7
+"mM9,mMaj9,-^9",minor/major ninth,"0,2,3,7,11","1P,3m,5P,7M,9M",Minor,2833,0,mM9
+"m13,-13",minor thirteenth,"0,2,3,7,9,10","1P,3m,5P,7m,9M,13M",Minor,2838,0,m13
+"m6,-6",minor sixth,"0,3,7,9","1P,3m,5P,6M",Minor,2324,0,m6
+"m7,min7,mi7,-7",minor seventh,"0,3,7,10","1P,3m,5P,7m",Minor,2322,0,m7
+"m9,-9",minor ninth,"0,2,3,7,10","1P,3m,5P,7m,9M",Minor,2834,0,m9
+"m11,-11",minor eleventh,"0,2,3,5,7,10","1P,3m,5P,7m,9M,11P",Minor,2898,0,m11
+"m#5,-#5,m+",minor augmented,"0,3,8","1P,3m,5A",Augmented,2312,0,m#5
+"maj9#11,Δ9#11,^9#11",major sharp eleventh (lydian),"0,2,4,6,7,11","1P,3M,5P,7M,9M,11A",Major,2737,0,maj9#11
+"maj#4,Δ#4,Δ#11,M7#11,^7#11,maj7#11",major seventh sharp eleventh,"0,4,6,7,11","1P,3M,5P,7M,11A",Major,2225,0,maj#4
+"maj7,Δ,ma7,M7,Maj7,^7",major seventh,"0,4,7,11","1P,3M,5P,7M",Major,2193,0,maj7
+"maj9,Δ9,^9",major ninth,"0,2,4,7,11","1P,3M,5P,7M,9M",Major,2705,0,maj9
+"7#11,7#4",lydian dominant seventh,"0,4,6,7,10","1P,3M,5P,7m,11A",Major,2226,0,7#11
+"m7b5,ø,-7b5,h7,h",half-diminished,"0,3,6,10","1P,3m,5d,7m",Diminished,2338,0,m7b5
+13,dominant thirteenth,"0,2,4,7,9,10","1P,3M,5P,7m,9M,13M",Major,2710,0,13
+7#9,dominant sharp ninth,"0,3,4,7,10","1P,3M,5P,7m,9A",Major,2450,0,7#9
+9,dominant ninth,"0,2,4,7,10","1P,3M,5P,7m,9M",Major,2706,0,9
+7b9,dominant flat ninth,"0,1,4,7,10","1P,3M,5P,7m,9m",Major,3218,0,7b9
+"dim7,°7,o7",diminished seventh,"0,3,6,9","1P,3m,5d,7d",Diminished,2340,0,dim7
+"dim,°,o",diminished,"0,3,6","1P,3m,5d",Diminished,2336,0,dim
+"maj7#5,maj7+5,+maj7,^7#5",augmented seventh,"0,4,8,11","1P,3M,5A,7M",Augmented,2185,0,maj7#5
+"aug,+,+5,^#5",augmented,"0,4,8","1P,3M,5A",Augmented,2184,0,aug
+alt7,altered,"0,1,4,10","1P,3M,7m,9m",Major,3202,0,alt7
+7b9#9,-,"0,1,3,4,7,10","1P,3M,5P,7m,9m,9A",Major,3474,0,7b9#9
+mb6b9,-,"0,1,3,8","1P,3m,6m,9m",Minor,3336,0,mb6b9
+"7b9#11,7b5b9,7b9b5",-,"0,1,4,6,7,10","1P,3M,5P,7m,9m,11A",Major,3250,0,7b9#11
+"7b9b13#11,7b9#11b13,7b5b9b13",-,"0,1,4,6,7,8,10","1P,3M,5P,7m,9m,11A,13m",Major,3258,0,7b9b13#11
+13b9#11,-,"0,1,4,6,7,9,10","1P,3M,5P,7m,9m,11A,13M",Major,3254,0,13b9#11
+7#5b9#11,-,"0,1,4,6,8,10","1P,3M,5A,7m,9m,11A",Augmented,3242,0,7#5b9#11
+Maddb9,-,"0,1,4,7","1P,3M,5P,9m",Major,3216,0,Maddb9
+M7b9,-,"0,1,4,7,11","1P,3M,5P,7M,9m",Major,3217,0,M7b9
+7b9b13,-,"0,1,4,7,8,10","1P,3M,5P,7m,9m,13m",Major,3226,0,7b9b13
+13b9,-,"0,1,4,7,9,10","1P,3M,5P,7m,9m,13M",Major,3222,0,13b9
+"7#5b9,7b9#5",-,"0,1,4,8,10","1P,3M,5A,7m,9m",Augmented,3210,0,7#5b9
+11b9,-,"0,1,5,7,10","1P,5P,7m,9m,11P",Unknown,3154,0,11b9
+"7sus4b9b13,7b9b13sus4",-,"0,1,5,7,8,10","1P,4P,5P,7m,9m,13m",Unknown,3162,0,7sus4b9b13
+m11A,-,"0,2,3,5,8,10","1P,3m,5A,7m,9M,11P",Augmented,2890,0,m11A
+m9b5,-,"0,2,3,6,10","1P,2M,3m,5d,7m",Diminished,2850,0,m9b5
+madd9,-,"0,2,3,7","1P,3m,5P,9M",Minor,2832,0,madd9
+mMaj9b6,-,"0,2,3,7,8,11","1P,3m,5P,6m,7M,9M",Minor,2841,0,mMaj9b6
+"m69,-69",-,"0,2,3,7,9","1P,3m,5P,6M,9M",Minor,2836,0,m69
+m9#5,-,"0,2,3,8,10","1P,3m,6m,7m,9M",Minor,2826,0,m9#5
+9no5,-,"0,2,4,10","1P,3M,7m,9M",Major,2690,0,9no5
+9b5,-,"0,2,4,6,10","1P,3M,5d,7m,9M",Major,2722,0,9b5
+M9b5,-,"0,2,4,6,11","1P,3M,5d,7M,9M",Major,2721,0,M9b5
+"9#11,9+4,9#4",-,"0,2,4,6,7,10","1P,3M,5P,7m,9M,11A",Major,2738,0,9#11
+"9#11b13,9b5b13",-,"0,2,4,6,7,8,10","1P,3M,5P,7m,9M,11A,13m",Major,2746,0,9#11b13
+69#11,-,"0,2,4,6,7,9","1P,3M,5P,6M,9M,11A",Major,2740,0,69#11
+"13#11,13+4,13#4",-,"0,2,4,6,7,9,10","1P,3M,5P,7m,9M,11A,13M",Major,2742,0,13#11
+"M13#11,maj13#11,M13+4,M13#4",-,"0,2,4,6,7,9,11","1P,3M,5P,7M,9M,11A,13M",Major,2741,0,M13#11
+9#5#11,-,"0,2,4,6,8,10","1P,3M,5A,7m,9M,11A",Augmented,2730,0,9#5#11
+13b5,-,"0,2,4,6,9,10","1P,3M,5d,6M,7m,9M",Major,2726,0,13b5
+"Madd9,2,add9,add2",-,"0,2,4,7","1P,3M,5P,9M",Major,2704,0,Madd9
+M7add13,-,"0,2,4,7,9,11","1P,3M,5P,6M,7M,9M",Major,2709,0,M7add13
+"M#5add9,+add9",-,"0,2,4,8","1P,3M,5A,9M",Augmented,2696,0,M#5add9
+"9#5,9+",-,"0,2,4,8,10","1P,3M,5A,7m,9M",Augmented,2698,0,9#5
+"maj9#5,Maj9#5",-,"0,2,4,8,11","1P,3M,5A,7M,9M",Augmented,2697,0,maj9#5
+13no5,-,"0,2,4,9,10","1P,3M,7m,9M,13M",Major,2694,0,13no5
+"sus24,sus4add9",-,"0,2,5,7","1P,2M,4P,5P",Unknown,2640,0,sus24
+"9sus4,9sus",-,"0,2,5,7,10","1P,4P,5P,7m,9M",Unknown,2642,0,9sus4
+M9sus4,-,"0,2,5,7,11","1P,4P,5P,7M,9M",Unknown,2641,0,M9sus4
+"13sus4,13sus",-,"0,2,5,7,9,10","1P,4P,5P,7m,9M,13M",Unknown,2646,0,13sus4
+M9#5sus4,-,"0,2,5,8,11","1P,4P,5A,7M,9M",Augmented,2633,0,M9#5sus4
+"7#9#11,7b5#9,7#9b5",-,"0,3,4,6,7,10","1P,3M,5P,7m,9A,11A",Major,2482,0,7#9#11
+maj7#9#11,-,"0,3,4,6,7,11","1P,3M,5P,7M,9A,11A",Major,2481,0,maj7#9#11
+7#9#11b13,-,"0,3,4,6,7,8,10","1P,3M,5P,7m,9A,11A,13m",Major,2490,0,7#9#11b13
+13#9#11,-,"0,3,4,6,7,9,10","1P,3M,5P,7m,9A,11A,13M",Major,2486,0,13#9#11
+7#9b13,-,"0,3,4,7,8,10","1P,3M,5P,7m,9A,13m",Major,2458,0,7#9b13
+13#9,-,"0,3,4,7,9,10","1P,3M,5P,7m,9A,13M",Major,2454,0,13#9
++add#9,-,"0,3,4,8","1P,3M,5A,9A",Augmented,2440,0,+add#9
+"7#5#9,7#9#5,7alt",-,"0,3,4,8,10","1P,3M,5A,7m,9A",Augmented,2442,0,7#5#9
+"4,quartal",-,"0,3,5,10","1P,4P,7m,10m",Unknown,2370,0,4
+madd4,-,"0,3,5,7","1P,3m,4P,5P",Minor,2384,0,madd4
+"m7add11,m7add4",-,"0,3,5,7,10","1P,3m,5P,7m,11P",Minor,2386,0,m7add11
+oM7,-,"0,3,6,11","1P,3m,5d,7M",Diminished,2337,0,oM7
+o7M7,-,"0,3,6,9,11","1P,3m,5d,6M,7M",Diminished,2341,0,o7M7
+mMaj7b6,-,"0,3,7,8,11","1P,3m,5P,6m,7M",Minor,2329,0,mMaj7b6
+m7#5,-,"0,3,8,10","1P,3m,6m,7m",Minor,2314,0,m7#5
+mb6M7,-,"0,3,8,11","1P,3m,6m,7M",Minor,2313,0,mb6M7
+7no5,-,"0,4,10","1P,3M,7m",Major,2178,0,7no5
+Mb5,-,"0,4,6","1P,3M,5d",Major,2208,0,Mb5
+7b5,-,"0,4,6,10","1P,3M,5d,7m",Major,2210,0,7b5
+M7b5,-,"0,4,6,11","1P,3M,5d,7M",Major,2209,0,M7b5
+"7#11b13,7b5b13",-,"0,4,6,7,8,10","1P,3M,5P,7m,11A,13m",Major,2234,0,7#11b13
+"M6#11,M6b5,6#11,6b5",-,"0,4,6,7,9","1P,3M,5P,6M,11A",Major,2228,0,M6#11
+7b6,-,"0,4,7,8,10","1P,3M,5P,6m,7m",Major,2202,0,7b6
+"7add6,67,7add13",-,"0,4,7,9,10","1P,3M,5P,7m,13M",Major,2198,0,7add6
+"7#5,+7,7+,7aug,aug7",-,"0,4,8,10","1P,3M,5A,7m",Augmented,2186,0,7#5
+M7sus4,-,"0,5,7,11","1P,4P,5P,7M",Unknown,2129,0,M7sus4
+7#5sus4,-,"0,5,8,10","1P,4P,5A,7m",Augmented,2122,0,7#5sus4
+M7#5sus4,-,"0,5,8,11","1P,4P,5A,7M",Augmented,2121,0,M7#5sus4
