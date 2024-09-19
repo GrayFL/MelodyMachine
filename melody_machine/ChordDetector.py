@@ -4,8 +4,6 @@ from typing import Union
 from itertools import product, chain
 from re import findall
 
-from . import miditools
-
 NOTE_MAP = {
     # dict[str,int]
     'C': 0,
@@ -381,13 +379,19 @@ def chord_p(chord):
 
 @staticmethod
 def chord_progression(
-    arr_chord: Union[list[list[np.int8]], list[list[int]],
-                        list[list[np.str_]], list[list[str]]]
+    arr_chord: Union[
+        list[list[np.number]],
+        list[list[int]],
+        list[list[np.str_]],
+        list[list[str]],
+        ]
     ):
+    '''
+    从音符或音高类型的序列生成标准化的和弦进行
+    '''
     if isinstance(arr_chord[0][0], Union[int, np.number]):
         progression = [chord_p(chord) for chord in arr_chord]
-    elif isinstance(arr_chord[0][0],
-                    str) or isinstance(arr_chord[0][0], np.str_):
+    elif isinstance(arr_chord[0][0], Union[str, np.str_]):
         progression = [chord_s(chord) for chord in arr_chord]
     return progression
 

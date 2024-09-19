@@ -1,3 +1,4 @@
 from .base import note, chord
-from .base.chord import Chord, progression
-from .base.chord import CHORD_DB
+from .base import Chord, progression
+from .base import CHORD_DB
+from .miditools import MTracks, Song

@@ -3,10 +3,13 @@ M,major,90,"0,4,7","1P,3M,5P",3,Major,"M,^,",2192
 m,minor,90,"0,3,7","1P,3m,5P",3,Minor,"m,min,-",2320
 7,dominant seventh,90,"0,4,7,10","1P,3M,5P,7m",4,Major,"7,dom",2194
 5,fifth,85,"0,7","1P,5P",2,Unknown,5,2064
+sus2,suspended second,75,"0,2,7","1P,2M,5P",3,Unknown,sus2,2576
+sus4,suspended fourth,75,"0,5,7","1P,4P,5P",3,Unknown,"sus4,sus",2128
 Madd9,-,70,"0,4,7,14","1P,3M,5P,9M",4,Major,"Madd9,2,add9,add2",2704
 maj7,major seventh,70,"0,4,7,11","1P,3M,5P,7M",4,Major,"maj7,Δ,ma7,M7,Maj7,^7",2193
 madd9,-,70,"0,3,7,14","1P,3m,5P,9M",4,Minor,madd9,2832
 m7,minor seventh,70,"0,3,7,10","1P,3m,5P,7m",4,Minor,"m7,min7,mi7,-7",2322
+madd4,-,70,"0,3,5,7","1P,3m,4P,5P",4,Minor,madd4,2384
 M7b6,major seventh flat sixth,10,"0,4,8,11","1P,3M,6m,7M",4,Major,"M7b6,^7b6",2185
 7b13,-,10,"0,4,10,20","1P,3M,7m,13m",4,Major,7b13,2186
 9b13,-,10,"0,4,10,14,20","1P,3M,7m,9M,13m",5,Major,9b13,2698
@@ -17,8 +20,6 @@ Mb5,-,0,"0,4,6","1P,3M,5d",3,Major,Mb5,2208
 m#5,minor augmented,0,"0,3,8","1P,3m,5A",3,Augmented,"m#5,-#5,m+",2312
 aug,augmented,0,"0,4,8","1P,3M,5A",3,Augmented,"aug,+,+5,^#5",2184
 dim,diminished,0,"0,3,6","1P,3m,5d",3,Diminished,"dim,°,o",2336
-sus2,suspended second,0,"0,2,7","1P,2M,5P",3,Unknown,sus2,2576
-sus4,suspended fourth,0,"0,5,7","1P,4P,5P",3,Unknown,"sus4,sus",2128
 6,sixth,0,"0,4,7,9","1P,3M,5P,6M",4,Major,"6,add6,add13,M6",2196
 alt7,altered,0,"0,4,10,13","1P,3M,7m,9m",4,Major,alt7,3202
 Maddb9,-,0,"0,4,7,13","1P,3M,5P,9m",4,Major,Maddb9,3216
@@ -28,7 +29,6 @@ M7b5,-,0,"0,4,6,11","1P,3M,5d,7M",4,Major,M7b5,2209
 m/ma7,minor/major seventh,0,"0,3,7,11","1P,3m,5P,7M",4,Minor,"m/ma7,m/maj7,mM7,mMaj7,m/M7,-Δ7,mΔ,-^7",2321
 m6,minor sixth,0,"0,3,7,9","1P,3m,5P,6M",4,Minor,"m6,-6",2324
 mb6b9,-,0,"0,3,8,13","1P,3m,6m,9m",4,Minor,mb6b9,3336
-madd4,-,0,"0,3,5,7","1P,3m,4P,5P",4,Minor,madd4,2384
 m7#5,-,0,"0,3,8,10","1P,3m,6m,7m",4,Minor,m7#5,2314
 mb6M7,-,0,"0,3,8,11","1P,3m,6m,7M",4,Minor,mb6M7,2313
 maj7#5,augmented seventh,0,"0,4,8,11","1P,3M,5A,7M",4,Augmented,"maj7#5,maj7+5,+maj7,^7#5",2185
