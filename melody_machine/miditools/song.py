@@ -1,15 +1,18 @@
 import mido
 import numpy as np
-from typing import Union
+from typing import Union, Literal
 from re import findall, IGNORECASE
 
 from ..base import AllNumType, AllStrType
 from ..base import Chord
-from .config import SESSION_DATA
+from ..config import SESSION_DATA
 
 
 class MTracks(dict):
     '''
+    ⚠️Warning: 不推荐使用该类，Song类具有更丰富的功能
+    ---
+    
     所有音符轨道的聚合，继承自dict
 
     类型: dict[str, NDarray]
@@ -46,29 +49,29 @@ class MTracks(dict):
                 self.bpM = round(60 / msg.tempo * 1000000, 1)
             if 'track_name' == msg.type:
                 mtrack = self._process_miditrack(trk)
-                if mtrack is not None:  # 非None
+                if mtrack is not None:         # 非None
                     self[msg.name] = mtrack
 
     def _process_miditrack(self, track: mido.MidiTrack):
-        t = 0  # tick time
+        t = 0                                            # tick time
         note_pool = {}
         mtrack = []
         for msg in track:
             t += msg.time
             if 'note_on' == msg.type:
                 if msg.note in note_pool:
-                    note_pool[msg.note].append([msg, t])  # [事件, 起始时间]
+                    note_pool[msg.note].append([msg, t]) # [事件, 起始时间]
                 else:
                     note_pool[msg.note] = [[msg, t]]
             elif 'note_off' == msg.type:
                 if msg.note in note_pool:
                     [_msg, t_start] = note_pool[msg.note].pop(0)
                     mtrack.append([
-                        _msg.note,  # pitch
+                        _msg.note,                       # pitch
                         _msg.velocity,
                         t_start,
-                        t,  # t_end
-                        t - t_start,  # duration
+                        t,                               # t_end
+                        t - t_start,                     # duration
                         _msg.channel,
                         ])
                 else:
@@ -77,7 +80,7 @@ class MTracks(dict):
             mtrack = np.array(mtrack, dtype=np.float32)
             mtrack[:, 2:5] = mtrack[:, 2:5] / self.Bar
             mtrack[:, 2:4] = mtrack[:, 2:4] + self.InitBar
-            # 将开始和结束时间 + InitBar 以匹配手稿时间
+                                                         # 将开始和结束时间 + InitBar 以匹配手稿时间
             return mtrack
         else:
             return None
@@ -114,6 +117,8 @@ class Song():
         self.InitBar = SESSION_DATA.InitBar
         self.channel_map = {}
         self.instrument_map = {}
+        self.display_backend: Literal['pandas', 'str'] = 'pandas'
+        self.range: list[float] = []
         if None is not mid_fp:
             self._parse_midifile(mid_fp)
 
@@ -121,13 +126,21 @@ class Song():
             if k in self.__dict__:
                 self.__dict__[k] = v
 
+        self._update_properties()
+
     def _new(self, **kwds):
         new_ins = Song(None, **self.__dict__)
 
         for k, v in kwds.items():
             if k in new_ins.__dict__:
                 new_ins.__dict__[k] = v
+
+        new_ins._update_properties()
+
         return new_ins
+
+    def _update_properties(self):
+        self.range = [self.track[:, 2].min(), self.track[:, 3].max()]
 
     def _parse_midifile(self, mid: Union[str, mido.MidiFile]):
         if isinstance(mid, str):
@@ -147,7 +160,7 @@ class Song():
                 self.instrument_map[msg.name] = _channel_id
                 sub_track = self._process_miditrack(trk, _channel_id)
                 _channel_id += 1
-                if sub_track is not None:  # 非None
+                if sub_track is not None:      # 非None
                     _track.append(sub_track)
         _track = np.concatenate(_track, axis=0)
         _track = _track[_track[:, 2].argsort()]
@@ -157,27 +170,29 @@ class Song():
         t = 0  # tick time
         note_pool = {}
         mtrack = []
+
         for msg in track:
             t += msg.time
             if 'note_on' == msg.type:
                 if msg.note in note_pool:
-                    note_pool[msg.note].append([msg, t])  # [事件, 起始时间]
+                    note_pool[msg.note].append([msg, t]) # [事件, 起始时间]
                 else:
                     note_pool[msg.note] = [[msg, t]]
             elif 'note_off' == msg.type:
                 if msg.note in note_pool:
                     [_msg, t_start] = note_pool[msg.note].pop(0)
                     mtrack.append([
-                        _msg.note,  # pitch
+                        _msg.note,                       # pitch
                         _msg.velocity,
                         t_start,
-                        t,  # t_end
-                        t - t_start,  # duration
+                        t,                               # t_end
+                        t - t_start,                     # duration
                         _msg.channel,
                         channel_id,
                         ])
                 else:
                     raise RuntimeError('音符消息没有闭合')
+
         if len(mtrack) > 0:
             mtrack = np.array(mtrack, dtype=np.float32)
             mtrack[:, 2:5] = mtrack[:, 2:5] / self.Bar
@@ -192,11 +207,13 @@ class Song():
             keys = [keys]
         if isinstance(keys, list):
             mth = []
-            _S = ';'.join(list(self.instrument_map.keys()))
+            # _S = ';'.join(list(self.instrument_map.keys()))
+            _S = ';'.join(self.get_instruments())
             for k in keys:
                 _f = findall(
-                    fr'(?<=^|)([^;]*{k}?[^;]*?)(?=;|$)', _S, IGNORECASE
+                    fr'(?<=^|)([^;]*(?:{k})[^;]*?)(?=;|$)', _S, IGNORECASE
                     )
+                print(_f)
                 if None is not _f:
                     mth += _f
             return mth
@@ -217,6 +234,7 @@ class Song():
             else:
                 channels = [self.channel_map[channels]]
         if isinstance(channels, list):
+            assert len(channels) != 0, "未选取有效轨道"
             if isinstance(channels[0], str):
                 channels = [self.channel_map[c] for c in channels]
             channel_selection = np.in1d(self.track[:, 6], channels)
@@ -246,6 +264,37 @@ class Song():
     def get_chord(self):
         return Chord(self.track[:, 0])
 
+    def get_instruments(self):
+        tmp = {
+            self.channel_map[ch_id]: ch_id
+            for ch_id in self.track[:, 6]
+            }
+        return list(tmp.keys())
+
+    def get_pitch_range(self):
+        return [self.track[:, 0].min(), self.track[:, 0].max()]
+
+    def _to_dataframe(self):
+        import pandas as pd
+        df = pd.DataFrame(
+            data=self.track,
+            columns=[
+                'pit', 'vel', 't_st', 't_ed', 't_dur', 'mid_ch', 'ch_id'
+                ]
+            )
+        df['name'] = df['ch_id'].apply(lambda x: self.channel_map[x])
+        df = df.astype({
+            'pit': int,
+            'vel': int,
+            't_st': float,
+            't_ed': float,
+            't_dur': float,
+            'mid_ch': int,
+            'ch_id': int,
+            'name': str
+            })
+        return df
+
     def __getitem__(self, idx):
         if not isinstance(idx, tuple):
             tBar, channels = idx, 'omni'
@@ -257,15 +306,30 @@ class Song():
 
     def __repr__(self) -> str:
 
-        def get_s_msg(msg: np.ndarray):
-            _s = f'{int(msg[0]):3} | {int(msg[1]):3} | {msg[2]:7.3f} | {msg[3]:7.3f} | {msg[4]:5.3f} | {int(msg[5]):6} | {int(msg[6]):2}  {self.channel_map[msg[6]]}'
-            return _s
+        if 'str' == self.display_backend:
 
-        _s_title = f'''{'pit':3} | {'vel':3} | {'t_st':7} | {'t_ed':7} | {'t_dur':5} | {'mid_ch':6} | {'ch_id&name'}\n'''
-        if None is not self.track:
-            _s = _s_title + '\n'.join([
-                f'{get_s_msg(msg)}' for msg in self.track
-                ])
-        else:
-            _s = _s_title
+            def get_s_msg(msg: np.ndarray):
+                _s = f'{int(msg[0]):3} | {int(msg[1]):3} | {msg[2]:7.3f} | {msg[3]:7.3f} | {msg[4]:5.3f} | {int(msg[5]):6} | {int(msg[6]):5} | {self.channel_map[msg[6]]}'
+                return _s
+
+            _s_title = f'''{'pit':3} | {'vel':3} | {'t_st':7} | {'t_ed':7} | {'t_dur':5} | {'mid_ch':6} | {'ch_id'} | {'name'}\n'''
+            if None is not self.track:
+                _s = _s_title + '\n'.join([
+                    f'{get_s_msg(msg)}' for msg in self.track
+                    ])
+            else:
+                _s = _s_title
+        elif 'pandas' == self.display_backend:
+            df = self._to_dataframe()
+            _s = df.__repr__()
+
+        return _s
+
+    def _repr_html_(self):
+        if 'str' == self.display_backend:
+            _s = None
+        elif 'pandas' == self.display_backend:
+            df = self._to_dataframe()
+            _s = df._repr_html_()
+
         return _s
