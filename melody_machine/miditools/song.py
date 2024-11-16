@@ -2,6 +2,7 @@ import mido
 import numpy as np
 from typing import Union, Literal
 from re import findall, IGNORECASE
+from pathlib import Path
 
 from ..base import AllNumType, AllStrType
 from ..base import Chord
@@ -110,11 +111,65 @@ class MTracks(dict):
 
 class Song():
 
-    def __init__(self, mid_fp: Union[str] = None, **kwds):
+    # def __init__(self, mid_fp: Union[str, Path] = None, **kwds):
+    #     self.track: np.ndarray = None
+    #     self.bpM = SESSION_DATA.bpM
+    #     # self.bpM: int = None
+    #     self.Bar = SESSION_DATA.Bar
+    #     self.InitBar = SESSION_DATA.InitBar
+    #     self.channel_map = {}
+    #     self.instrument_map = {}
+    #     self.display_backend: Literal['pandas', 'str'] = 'pandas'
+    #     self.range: list[float] = []
+
+    #     for k, v in kwds.items():
+    #         if k in self.__dict__:
+    #             self.__dict__[k] = v
+
+    #     if None is not mid_fp:
+    #         self._parse_midifile(mid_fp)
+
+    #     self._update_properties()
+
+    # def _new(self, **kwds):
+    #     new_ins = Song(None, **self.__dict__)
+
+    #     for k, v in kwds.items():
+    #         if k in new_ins.__dict__:
+    #             new_ins.__dict__[k] = v
+
+    #     new_ins._update_properties()
+
+    #     return new_ins
+
+    def __init__(
+            self,
+            mid_fp: Union[str, Path] = None,
+            spb: int = None,
+            bpB: int = None,
+            bpM: int = None,
+            tpb: int = None,
+            Bar: int = None,
+            InitBar: int = None,
+            **kwds
+        ) -> None:
         self.track: np.ndarray = None
-        self.bpM = SESSION_DATA.bpM
-        self.Bar = SESSION_DATA.Bar
-        self.InitBar = SESSION_DATA.InitBar
+        self.spb = spb or SESSION_DATA.spb     # steps per beat
+        self.bpB = bpB or SESSION_DATA.bpB     # beats per Bar
+        self.bpM = bpM or SESSION_DATA.bpM     # beats per Minutes
+        self.tpb = tpb or SESSION_DATA.tpb     # ticks per beat / timebase
+
+        if None is InitBar:
+            self.InitBar = SESSION_DATA.InitBar
+        else:
+            self.InitBar = InitBar
+
+        ## 计算二级参数
+        self.spB = self.spb * self.bpB
+        self.BpM = self.bpM / self.bpB
+        self.step = self.tpb // 4      # Fl studio中可视的最小单位长度 24
+        self.beat = self.step * self.spb
+        self.Bar = Bar or self.beat * self.bpB
         self.channel_map = {}
         self.instrument_map = {}
         self.display_backend: Literal['pandas', 'str'] = 'pandas'
@@ -122,38 +177,46 @@ class Song():
         if None is not mid_fp:
             self._parse_midifile(mid_fp)
 
-        for k, v in kwds.items():
-            if k in self.__dict__:
-                self.__dict__[k] = v
-
         self._update_properties()
 
     def _new(self, **kwds):
-        new_ins = Song(None, **self.__dict__)
-
-        for k, v in kwds.items():
-            if k in new_ins.__dict__:
+        new_ins = self.__new__(self.__class__)
+        for k, v in self.__dict__.items():
+            if k in kwds:
+                new_ins.__dict__[k] = kwds[k]
+            else:
                 new_ins.__dict__[k] = v
-
         new_ins._update_properties()
 
+        # for k, v in self.__dict__.items():
+        #     if k not in kwds:
+        #         kwds[k] = v
+        # new_ins = self.__init__(**kwds)
         return new_ins
 
     def _update_properties(self):
         self.range = [self.track[:, 2].min(), self.track[:, 3].max()]
 
-    def _parse_midifile(self, mid: Union[str, mido.MidiFile]):
+    def _parse_midifile(self, mid: Union[str, Path, mido.MidiFile]):
         if isinstance(mid, str):
+            mid = mido.MidiFile(mid)
+        elif isinstance(mid, Path):
             mid = mido.MidiFile(mid)
         else:
             pass
         _track = []
         _channel_id = 0
-        for trk in mid.tracks:
+
+        for _i, trk in enumerate(mid.tracks):
             trk: mido.MidiTrack
             msg: mido.MetaMessage = trk[0]
-            if 'set_tempo' == msg.type:
-                self.bpM = round(60 / msg.tempo * 1000000, 1)
+            # if ('set_tempo' == msg.type) and (None is self.bpM):
+            if 0 == _i:
+                for msg in trk:
+                    if 'set_tempo' == msg.type:
+                        self.bpM = round(60 / msg.tempo * 1000000, 1)
+                        break
+                continue
             if 'track_name' == msg.type:
                 self.channel_map[_channel_id] = msg.name
                 self.channel_map[msg.name] = _channel_id
@@ -261,8 +324,34 @@ class Song():
         # return outs
         return self._new(track=outs)
 
-    def get_chord(self):
-        return Chord(self.track[:, 0])
+    def quantify(
+            self,
+            level: Literal['Bar', 'beat', 'step'] = 'beat',
+            inplace=False
+        ):
+        if inplace:
+            track = self.track
+        else:
+            track = self.track.copy()
+        if 'Bar' == level:
+            track[:, 2:5] = track[:, 2:5].round(0)
+        elif 'beat' == level:
+            track[:, 2:5] = (track[:, 2:5] * self.bpB).round(0) / self.bpB
+        elif 'step' == level:
+            track[:, 2:5] = (track[:, 2:5] * self.spB).round(0) / self.spB
+
+        if not inplace:
+            return self._new(track=track)
+
+    def get_chord(
+            self,
+            quantization_level: Literal['Bar', 'beat', 'step'] = None
+        ):
+        if None is not quantization_level:
+            tmp_song = self.quantify(level=quantization_level)
+            return Chord(tmp_song.track[:, 0])
+        else:
+            return Chord(self.track[:, 0])
 
     def get_instruments(self):
         tmp = {
