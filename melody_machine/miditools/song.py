@@ -50,29 +50,29 @@ class MTracks(dict):
                 self.bpM = round(60 / msg.tempo * 1000000, 1)
             if 'track_name' == msg.type:
                 mtrack = self._process_miditrack(trk)
-                if mtrack is not None:         # 非None
+                if mtrack is not None:  # 非None
                     self[msg.name] = mtrack
 
     def _process_miditrack(self, track: mido.MidiTrack):
-        t = 0                                            # tick time
+        t = 0  # tick time
         note_pool = {}
         mtrack = []
         for msg in track:
             t += msg.time
             if 'note_on' == msg.type:
                 if msg.note in note_pool:
-                    note_pool[msg.note].append([msg, t]) # [事件, 起始时间]
+                    note_pool[msg.note].append([msg, t])  # [事件, 起始时间]
                 else:
                     note_pool[msg.note] = [[msg, t]]
             elif 'note_off' == msg.type:
                 if msg.note in note_pool:
                     [_msg, t_start] = note_pool[msg.note].pop(0)
                     mtrack.append([
-                        _msg.note,                       # pitch
+                        _msg.note,  # pitch
                         _msg.velocity,
                         t_start,
-                        t,                               # t_end
-                        t - t_start,                     # duration
+                        t,  # t_end
+                        t - t_start,  # duration
                         _msg.channel,
                         ])
                 else:
@@ -81,7 +81,7 @@ class MTracks(dict):
             mtrack = np.array(mtrack, dtype=np.float32)
             mtrack[:, 2:5] = mtrack[:, 2:5] / self.Bar
             mtrack[:, 2:4] = mtrack[:, 2:4] + self.InitBar
-                                                         # 将开始和结束时间 + InitBar 以匹配手稿时间
+            # 将开始和结束时间 + InitBar 以匹配手稿时间
             return mtrack
         else:
             return None
@@ -110,37 +110,12 @@ class MTracks(dict):
 
 
 class Song():
-
-    # def __init__(self, mid_fp: Union[str, Path] = None, **kwds):
-    #     self.track: np.ndarray = None
-    #     self.bpM = SESSION_DATA.bpM
-    #     # self.bpM: int = None
-    #     self.Bar = SESSION_DATA.Bar
-    #     self.InitBar = SESSION_DATA.InitBar
-    #     self.channel_map = {}
-    #     self.instrument_map = {}
-    #     self.display_backend: Literal['pandas', 'str'] = 'pandas'
-    #     self.range: list[float] = []
-
-    #     for k, v in kwds.items():
-    #         if k in self.__dict__:
-    #             self.__dict__[k] = v
-
-    #     if None is not mid_fp:
-    #         self._parse_midifile(mid_fp)
-
-    #     self._update_properties()
-
-    # def _new(self, **kwds):
-    #     new_ins = Song(None, **self.__dict__)
-
-    #     for k, v in kwds.items():
-    #         if k in new_ins.__dict__:
-    #             new_ins.__dict__[k] = v
-
-    #     new_ins._update_properties()
-
-    #     return new_ins
+    """
+    channel_map : dict
+        双向的字典，映射了从乐器编号和名称之间的关系
+    instrument_map : dict
+        单向的字典，仅仅是名字到编号的映射
+    """
 
     def __init__(
             self,
@@ -153,11 +128,30 @@ class Song():
             InitBar: int = None,
             **kwds
         ) -> None:
+        '''
+        Parameters
+        ---
+        mid_fp :
+            midi 文件路径
+        spb :
+            steps per beat
+        bpB :
+            beats per Bar
+        bpM :
+            beats per Minute
+        tpb :
+            ticks per beat
+        Bar :
+            以 tick 为单位的长度
+        InitBar :
+            初始化
+
+        '''
         self.track: np.ndarray = None
-        self.spb = spb or SESSION_DATA.spb     # steps per beat
-        self.bpB = bpB or SESSION_DATA.bpB     # beats per Bar
-        self.bpM = bpM or SESSION_DATA.bpM     # beats per Minutes
-        self.tpb = tpb or SESSION_DATA.tpb     # ticks per beat / timebase
+        self.spb = spb or SESSION_DATA.spb  # steps per beat
+        self.bpB = bpB or SESSION_DATA.bpB  # beats per Bar
+        self.bpM = bpM or SESSION_DATA.bpM  # beats per Minutes
+        self.tpb = tpb or SESSION_DATA.tpb  # ticks per beat / timebase
 
         if None is InitBar:
             self.InitBar = SESSION_DATA.InitBar
@@ -167,7 +161,7 @@ class Song():
         ## 计算二级参数
         self.spB = self.spb * self.bpB
         self.BpM = self.bpM / self.bpB
-        self.step = self.tpb // 4      # Fl studio中可视的最小单位长度 24
+        self.step = self.tpb // 4  # Fl studio中可视的最小单位长度 24
         self.beat = self.step * self.spb
         self.Bar = Bar or self.beat * self.bpB
         self.channel_map = {}
@@ -223,7 +217,7 @@ class Song():
                 self.instrument_map[msg.name] = _channel_id
                 sub_track = self._process_miditrack(trk, _channel_id)
                 _channel_id += 1
-                if sub_track is not None:      # 非None
+                if sub_track is not None:  # 非None
                     _track.append(sub_track)
         _track = np.concatenate(_track, axis=0)
         _track = _track[_track[:, 2].argsort()]
@@ -238,18 +232,18 @@ class Song():
             t += msg.time
             if 'note_on' == msg.type:
                 if msg.note in note_pool:
-                    note_pool[msg.note].append([msg, t]) # [事件, 起始时间]
+                    note_pool[msg.note].append([msg, t])  # [事件, 起始时间]
                 else:
                     note_pool[msg.note] = [[msg, t]]
             elif 'note_off' == msg.type:
                 if msg.note in note_pool:
                     [_msg, t_start] = note_pool[msg.note].pop(0)
                     mtrack.append([
-                        _msg.note,                       # pitch
+                        _msg.note,  # pitch
                         _msg.velocity,
                         t_start,
-                        t,                               # t_end
-                        t - t_start,                     # duration
+                        t,  # t_end
+                        t - t_start,  # duration
                         _msg.channel,
                         channel_id,
                         ])
@@ -286,14 +280,19 @@ class Song():
             tBar: Union[float, slice],
             channels: Union[str, int, list[str], list[int]] = 'omni'
         ):
-        # if not isinstance():
-        #     raise RuntimeError('channels 不是正确的类型')
+        """
+        节选时间范围内的所有音符
+
+        Parameters
+        ---
+        tBar :
+            支持使用一个时间点或者slice范围
+        """
         outs = []
         # 将单字符输入转变为可迭代的轨道名
         if isinstance(channels, Union[str, int]):
             if 'omni' == channels:
-                channels = list(range(len(self.channel_map) // 2))
-                # 因为channel_map是双向的，所以直接//2就可以得到乐器数量
+                channels = list(range(len(self.instrument_map)))
             else:
                 channels = [self.channel_map[channels]]
         if isinstance(channels, list):
@@ -319,9 +318,7 @@ class Song():
                 ]
             outs = np.concatenate(outs, axis=0)
 
-        # 节选当前时间戳所在的所有音符
         outs = outs if len(outs) > 0 else None
-        # return outs
         return self._new(track=outs)
 
     def quantify(
@@ -329,6 +326,14 @@ class Song():
             level: Literal['Bar', 'beat', 'step'] = 'beat',
             inplace=False
         ):
+        """
+        量化音符
+
+        Parameters
+        ---
+        level :
+            就近量化到哪个级别的小节线
+        """
         if inplace:
             track = self.track
         else:
@@ -347,6 +352,13 @@ class Song():
             self,
             quantization_level: Literal['Bar', 'beat', 'step'] = None
         ):
+        """
+        获取当前所有音符所构成的和弦
+
+        Returns
+        ---
+        chord : Chord
+        """
         if None is not quantization_level:
             tmp_song = self.quantify(level=quantization_level)
             return Chord(tmp_song.track[:, 0])

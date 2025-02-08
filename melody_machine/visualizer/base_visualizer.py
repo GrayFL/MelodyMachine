@@ -76,12 +76,22 @@ mtracks         :
 
 
 class BaseVisualizer():
+    '''
+    BaseVisualizer可以实现创建画布与绘制单帧图片
+
+    画布包含：
+    - 音阶背景
+    - 小节线
+    - 钢琴条
+    - 音符
+    - 小节线
+    '''
 
     def __init__(self, **kwds) -> None:
-        self.spb = SESSION_DATA.spb                    # steps per beat
-        self.bpB = SESSION_DATA.bpB                    # beats per Bar
-        self.bpM = SESSION_DATA.bpM                    # beats per Minutes
-        self.tpb = SESSION_DATA.tpb                    # ticks per beat / timebase
+        self.spb = SESSION_DATA.spb  # steps per beat
+        self.bpB = SESSION_DATA.bpB  # beats per Bar
+        self.bpM = SESSION_DATA.bpM  # beats per Minutes
+        self.tpb = SESSION_DATA.tpb  # ticks per beat / timebase
         self.BeginTime = SESSION_DATA.BeginTime
         self.InitBar = SESSION_DATA.InitBar
         self.h = SESSION_DATA.h
@@ -93,14 +103,14 @@ class BaseVisualizer():
         self.min_pitch_range: list[float] = \
             SESSION_DATA.min_pitch_range               # 音高上下最小范围
 
-        for k, v in kwds.items():      # 从脚本文件中覆写参数
+        for k, v in kwds.items():  # 从脚本文件中覆写参数
             if k in self.__dict__:
                 self.__dict__[k] = v
 
         ## 计算二级参数
         self.spB = self.spb * self.bpB
         self.BpM = self.bpM / self.bpB
-        self.step = self.tpb // 4      # Fl studio中可视的最小单位长度 24
+        self.step = self.tpb // 4  # Fl studio中可视的最小单位长度 24
         self.beat = self.step * self.spb
         self.Bar = self.beat * self.bpB
 
@@ -204,9 +214,10 @@ class BaseVisualizer():
         '''
         给输入的midipattern渲染一张完整的静态背景
 
-        Return
+        Returns
         ---
-        rgba shape[h,w,4]
+        array
+            rgba shape[h,w,4]
         '''
         # 初始化
         ax_fg._children = []

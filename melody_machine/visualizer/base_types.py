@@ -2,6 +2,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+class ColorPalette():
+
+    def __init__(self, list_of_colors: np.ndarray | list) -> None:
+        self.colors = list_of_colors
+        self.len = len(list_of_colors)
+
+    def __getitem__(self, idx):
+        return self.colors[idx % self.len]
+
+
 class COLOR():
     # 颜色
     COLOR_BG = np.array([49 / 255, 56 / 255, 62 / 255])
@@ -14,9 +24,9 @@ class COLOR():
     COLOR_NOTE_FACE = np.array([0.9, 0.9, 0.9])
     # COLOR_NOTES_FACE = ['#9ed1a5', '#9fd3ba', '#a1d6d0', '#a3cad8']
     # COLOR_NOTES_FACE = [plt.get_cmap('tab20')(x) for x in range(20)]
-    COLOR_NOTES_FACE = [
+    COLOR_NOTES_FACE = ColorPalette([
         plt.get_cmap('tab20')(x) for x in [5, 1, 3, 9, 17, 15]
-        ]
+        ])
     # COLOR_NOTES_FACE = [plt.get_cmap('tab20')(x) for x in [4, 0, 2, 8, 16, 14]]
     COLOR_NOTE_EDGE = np.array([*COLOR_BG, 0.9])
     COLOR_TICK = np.array([0.9, 0.9, 0.9])

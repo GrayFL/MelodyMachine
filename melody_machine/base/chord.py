@@ -59,7 +59,7 @@ class Chord():
 
         Parameters
         ---
-        batch_chord: np.ndarray
+        batch_chord : np.ndarray
             - 维度 [Batch size, amount of Notes]
         '''
         # 转换为pitch类型
@@ -161,9 +161,9 @@ def degree2interval(
 
     Parameters
     ---
-    degrees:
-        - 和弦的度数序列，如
-        `'1P,5P,7m,9M,11P'`
+    degrees :
+        - 和弦的度数序列，如  
+        `'1P,5P,7m,9M,11P'`  
         `['1P','5P','7m','9M','11P']`
     '''
     if isinstance(degrees, str):
@@ -190,15 +190,15 @@ def interval2degree(
 
     Parameters
     ---
-    intervals:
-        - 和弦的度数序列，如
-        `'0,4,6,9'`
+    intervals :
+        - 和弦的度数序列，如  
+        `'0,4,6,9'`  
         `[0,4,6,9]`
     
     Return
     ---
-    arr_degrees:
-        - `[('1P', '3M', '4A', '6M'),
+    arr_degrees :
+        - `[('1P', '3M', '4A', '6M'),  
             ('1P', '3M', '4A', '7d'), ...]`
     '''
     if isinstance(intervals, str):
@@ -263,7 +263,7 @@ def find_matched_id(shift_alt_degrees: list[list[tuple[str]]]):
                 if score >= 0.1:
                     if ((input_id, database_id) not in dic_score) or (
                         (input_id, database_id) in dic_score
-                        and score > dic_score[(input_id, database_id)]
+                            and score > dic_score[(input_id, database_id)]
                         ):
                         dic_score[(input_id, database_id)] = score
 
@@ -297,7 +297,7 @@ def get_score(
     similarity = len(div & deg) / len_
 
     # print(div, deg, priority, similarity)
-    score = similarity * 0.6 + ((priority + 10) / 110) * 0.4
+    score = similarity*0.6 + ((priority+10) / 110) * 0.4
     # score = similarity
     # print(score)
     return score
