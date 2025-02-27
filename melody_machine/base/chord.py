@@ -5,12 +5,21 @@ from itertools import product, chain
 from pathlib import Path
 from re import findall
 from .common import DEGREE_MAP, INTERVAL_MAP
-from .base_types import AllStrType, AllNumType, NotationType, PitchType
+from .base_types import AllStrType, AllNumType, AllIntType, NotationType, PitchType
 
 from . import note
 
-print(Path('chord_db.csv').absolute())
-CHORD_DB = pd.read_csv('chord_db.csv')
+
+def find_library_path(library_name):
+    import importlib.util
+    spec = importlib.util.find_spec(library_name)
+    library_path = Path(spec.origin).parent
+    return library_path
+
+
+library_path = find_library_path('melody_machine')
+print((library_path / 'chord_db.csv').absolute())
+CHORD_DB = pd.read_csv(library_path / 'chord_db.csv')
 
 
 class Chord():
@@ -100,7 +109,7 @@ class Chord():
         return detection
 
     def __repr__(self) -> str:
-        _s = f'{self.notes}'
+        _s = f'Chord({self.notes})'
         return _s
 
 

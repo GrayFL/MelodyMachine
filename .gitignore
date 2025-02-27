@@ -1,2 +1,4 @@
 assets
 __pycache__
+__temp__*
+_bak
